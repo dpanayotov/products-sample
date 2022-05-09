@@ -1,4 +1,4 @@
-name: Sync from BAS structure
+name: Sync to BAS structure
 
 on:
   push:
