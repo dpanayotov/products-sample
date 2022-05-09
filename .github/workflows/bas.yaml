@@ -3,6 +3,7 @@ name: BAS structure
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,6 +11,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Sync BAS structure
         env:
           TARGET_BRANCH: 'to_bas'
         run: |
