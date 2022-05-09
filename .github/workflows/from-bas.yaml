@@ -1,0 +1,32 @@
+name: Sync from BAS structure
+
+on:
+  push:
+    branches: [ to_bas ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Sync BAS structure
+        env:
+          SOURCE_BRANCH: 'to_bas'
+          TARGET_BRANCH: 'from_bas'
+        run: |
+          PROJECT_NAME=`basename "$PWD"`
+          SRC_DIR="${PROJECT_NAME}/src"
+          git fetch
+          git checkout $SOURCE_BRANCH
+          git branch -D $TARGET_BRANCH || true
+          git checkout -b $TARGET_BRANCH
+          rm -rf mta.yaml $PROJECT_NAME
+          mv "${SRC_DIR}/*" . || true
+
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add -A
+          git diff-index --quiet HEAD ||  git commit -am "sync files from BAS format"  # commit to the repository (ignore if no modification)
+          git push origin $TARGET_BRANCH # push to remote branch
