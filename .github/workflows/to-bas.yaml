@@ -2,7 +2,7 @@ name: Sync to BAS structure
 
 on:
   push:
-    branches: [ to_bas ]
+    branches: [ main ]
   workflow_dispatch:
 jobs:
   build:
