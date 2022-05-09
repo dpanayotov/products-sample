@@ -1,0 +1,67 @@
+name: BAS structure
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+        env:
+          TARGET_BRANCH: 'to_bas'
+        run: |
+          PROJECT_NAME=`basename "$PWD"`
+          SRC_DIR="${PROJECT_NAME}/src"
+          git fetch
+          git checkout $TARGET_BRANCH || git checkout -b $TARGET_BRANCH
+          mkdir -p "${SRC_DIR}"
+          mv * "${SRC_DIR}"
+
+
+          cat >> ".gitignore" << EOL
+          **/.env
+          EOL
+
+          cat > "${PROJECT_NAME}/package.json" << EOL
+          {
+            "name": "deploy",
+            "dependencies": {
+              "@sap/hdi-deploy": "^4.*"
+            },
+            "scripts": {
+              "start": "node node_modules/@sap/hdi-deploy/deploy.js"
+            }
+          }
+          EOL
+
+          cat > mta.yaml << EOL
+          _schema-version: "2.1"
+          ID: sample
+          version: 0.0.1
+          modules:
+          - name: db
+            type: hdb
+            path: $PROJECT_NAME
+            requires:
+            - name: cross-container-service-2
+              group: SERVICE_REPLACEMENTS
+              properties:
+                TARGET_CONTAINER: PRODUCTS
+                key: ServiceName_2
+                service: ~{the-service-name}
+          resources:
+          - name: cross-container-service-2
+            type: org.cloudfoundry.existing-service
+            parameters:
+              service-name: xsk-hdi-cont
+            properties:
+              the-service-name: \${service-name}
+          EOL
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add -A
+          git diff-index --quiet HEAD ||  git commit -am "sync files to BAS format"  # commit to the repository (ignore if no modification)
+          git push origin $TARGET_BRANCH # push to remote branch
