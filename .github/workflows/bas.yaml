@@ -20,7 +20,7 @@ jobs:
           git fetch
           git checkout $TARGET_BRANCH || git checkout -b $TARGET_BRANCH
           mkdir -p "${SRC_DIR}"
-          mv * "${SRC_DIR}"
+          mv * "${SRC_DIR}" 2>/dev/null
 
 
           cat >> ".gitignore" << EOL
