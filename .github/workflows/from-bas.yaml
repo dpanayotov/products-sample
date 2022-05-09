@@ -22,11 +22,11 @@ jobs:
           git checkout $SOURCE_BRANCH
           git branch -D $TARGET_BRANCH || true
           git checkout -b $TARGET_BRANCH
+          mv $SRC_DIR/* . || true
           rm -rf mta.yaml $PROJECT_NAME
-          mv "${SRC_DIR}/*" . || true
 
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
           git add -A
-          git diff-index --quiet HEAD ||  git commit -am "sync files from BAS format"  # commit to the repository (ignore if no modification)
+          git diff-index --quiet HEAD ||  git commit -am "sync files from BAS to XSK format"  # commit to the repository (ignore if no modification)
           git push origin $TARGET_BRANCH # push to remote branch
