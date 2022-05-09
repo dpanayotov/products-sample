@@ -1,8 +1,8 @@
-name: Sync to BAS structure
+name: Sync from BAS structure
 
 on:
   push:
-    branches: [ main ]
+    branches: [ to_bas ]
   workflow_dispatch:
 jobs:
   build:
@@ -18,12 +18,13 @@ jobs:
           PROJECT_NAME=`basename "$PWD"`
           SRC_DIR="${PROJECT_NAME}/src"
           git fetch
-          git checkout $TARGET_BRANCH || git checkout -b $TARGET_BRANCH
+          git branch -D $TARGET_BRANCH || true
+          git checkout -b $TARGET_BRANCH
           mkdir -p "${SRC_DIR}"
           mv * "${SRC_DIR}" || true
 
 
-          cat >> ".gitignore" << EOL
+          cat > ".gitignore" << EOL
           **/.env
           EOL
 
