@@ -5,7 +5,7 @@ namespace products.db;
 context Products {
    
    @Catalog.tableType : #COLUMN
-   @Catalog.index: [ { name : 'ORDERSINDEX', unique : true, order : #DESC, elementNames : ['Id'] } ] 
+   @Catalog.index: [ { name : 'ORDERSINDEX', unique : true, order : #ASC, elementNames : ['Id'] } ] 
    entity Orders{
           key Id               : String(32);
           Status               : String(100);
